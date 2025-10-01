@@ -93,16 +93,26 @@ int main()
 	glDeleteShader(fragmentShader);
 
 	//vertex data
-	float vertices[]{
+	float vertices[]
+	{
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f,  0.0f
+		 0.5f,  0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f
 	};
 
-	//Generate Vertex Array Object and Vertex Buffer Object
-	unsigned int VBO,VAO;
+	// indices data
+	unsigned int indices[] =
+	{
+		0,1,2,
+		0,3,2
+	};
+
+	//Generate Vertex Array Object, Vertex Buffer Object and Element Buffer Object
+	unsigned int VBO,VAO,EBO;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
 	//bind our Vertex Array Object which will store our attributes configuration and current VBO
 	glBindVertexArray(VAO);
@@ -112,13 +122,24 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	//bind our EBO with target buffer, send our vertex data to the VBO and specify
+	// how we want to manage this data (to better allocation of memory)
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+
 	// set our vertex attributes for vertex shader and active vertex attribute with index 0
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	//unbind VAO and VBO
+	//unbind VAO, VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	
+
 
 	//render loop
 	while (!glfwWindowShouldClose(window))
@@ -133,18 +154,20 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
-		//activate the shader program, bind our VAO and draw triangle from 0-indexed vertice
+		//activate the shader program, bind our VAO and draw triangle from 0-indexed vertices
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES,0,3);
+		//glDrawArrays(GL_TRIANGLES,0,3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// swap back and front buffers for avoiding artifacts
 		// and check the events from user (mouse, keyboard)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	// delete VAO, VBO and shader program
+	// delete VAO, VBO, EBO and shader program
 	glDeleteVertexArrays(1,&VAO);
 	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
 	glDeleteProgram(shaderProgram);
 	glfwTerminate();
 
