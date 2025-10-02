@@ -1,38 +1,13 @@
 #include <GLAD/glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
-
+#include "Shader.h"
 
 // callback function which executes every time when the window size is change
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 // function which check if user pressed the escape key to close the window
 void processInput(GLFWwindow* window);
-
-
-
-
-//Vertex shader
-const char* vertexShaderSource =
-"#version 460 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location = 1) in vec3 aColors;\n"
-"out vec4 vertexColors;\n"
-"void main()\n"
-"{\n"
-"	gl_Position = vec4(aPos,1.0);\n"
-"	vertexColors = vec4(aColors,1.0f);\n"
-"}\0";
-
-//Fragment shader
-const char* fragmentShaderSource =
-"#version 460 core\n"
-"out vec4 FragColor;\n"
-"in vec4 vertexColors;\n"
-"void main()\n"
-"{\n"
-"	FragColor = vertexColors;\n"
-"}\n\0";
 
 int main()
 {
@@ -66,34 +41,8 @@ int main()
 	// resize by registering it:
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	//create Vertex shader
-	//attach the Vertex Shader source code to the shader object
-	// and compile the Vertex Shader
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	//create Fragment shader
-	//attach the Fragment Shader source code to the shader object
-	// and compile the Fragment Shader
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-
-	//Create Shader program, attach our shaders to program and link them
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-
-	//delete shaders
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
+	// Create our vertex and fragment shader, compile them and link into one shader programm
+	Shader ourShader("shaders/vertex.vs", "shaders/fragment.fs");
 
 	//vertex data
 	//float vertices[]
@@ -153,29 +102,26 @@ int main()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 
-
+	float offset = -0.5f;
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
 		//check if user pressed escape
 		processInput(window);
 
+		if (offset > 0.5f)
+			offset = -0.5f;
 		// set clear values for the colour buffers
 		// and clear buffers to preset values
 		glClearColor(1.0f, 1.0f, 0.0f, 1.0f); // yellow
 		//glClearColor(0.3568f, 0.0f, 0.7294f, 1.0f); // violet
 		glClear(GL_COLOR_BUFFER_BIT);
-
 		//activate the shader program
-		glUseProgram(shaderProgram);
+		ourShader.use();
+		/*offset+=0.00003f;
+		ourShader.setFloat("offset", offset);*/
 
-		// change the colour in the moment with uniform
-		/*float timeValue = glfwGetTime();
-		float blueValue = (sin(timeValue) / 2.0f) + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-		glUniform4f(vertexColorLocation, 0.3568f, 0.0f, blueValue,1.0f);*/
-
-
+		//ourShader.setFloat("offset", offset);
 		//bind our VAO and draw triangle from 0-indexed vertices
 		//glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
@@ -189,7 +135,7 @@ int main()
 	glDeleteVertexArrays(1,&VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	glDeleteProgram(shaderProgram);
+	//glDeleteProgram(shaderProgram);
 	glfwTerminate();
 
 
