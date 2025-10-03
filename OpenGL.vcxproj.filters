@@ -41,9 +41,17 @@
     <ClInclude Include="src\Shader.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\stb_image.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\vertex.vs" />
     <None Include="shaders\fragment.fs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\woodGate.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>

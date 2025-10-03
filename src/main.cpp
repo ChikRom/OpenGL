@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "Shader.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 // callback function which executes every time when the window size is change
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -44,27 +46,19 @@ int main()
 	// Create our vertex and fragment shader, compile them and link into one shader programm
 	Shader ourShader("shaders/vertex.vs", "shaders/fragment.fs");
 
-	//vertex data
-	//float vertices[]
-	//{
-	//	-0.5f, -0.5f, 0.0f,
-	//	 0.5f, -0.5f, 0.0f,
-	//	 0.5f,  0.5f, 0.0f,
-	//	//-0.5f,  0.5f, 0.0f
-	//};
-
 	float vertices[]
-	{	// vertices				// colors
-		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,
-		 0.0f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f
+	{	// vertices				// colors			// textures
+		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+		-0.5f,	0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	0.0f, 1.0f
 	};
 
 	// indices data
 	unsigned int indices[] =
 	{
 		0,1,2,
-		//0,3,2
+		0,3,2
 	};
 
 	//Generate Vertex Array Object, Vertex Buffer Object and Element Buffer Object
@@ -88,44 +82,68 @@ int main()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 
-	// set our vertex and colour attributes for vertex shader and active vertex attribute with index 0
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// set our vertex, colour and texture attributes for vertex shader and active vertex attribute with index 0,1,2
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
 
 	//unbind VAO, VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
+	// load and create texture
+	unsigned int texture;
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set the texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_REPEAT);
+
+	// load image, create texture, generate mipmaps
+	int width, height, nrChannels;
+	unsigned char* data = stbi_load("textures/woodGate.jpg", &width, &height, &nrChannels,0);
+
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load texture" << std::endl;
+	}
+	// free image memory
+	stbi_image_free(data);
+
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
 
-	float offset = -0.5f;
+
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
 		//check if user pressed escape
 		processInput(window);
 
-		if (offset > 0.5f)
-			offset = -0.5f;
+
 		// set clear values for the colour buffers
 		// and clear buffers to preset values
-		glClearColor(1.0f, 1.0f, 0.0f, 1.0f); // yellow
+		glClearColor(0.0f, 0.2f, 0.0f, 1.0f); // yellow
 		//glClearColor(0.3568f, 0.0f, 0.7294f, 1.0f); // violet
 		glClear(GL_COLOR_BUFFER_BIT);
-		//activate the shader program
-		ourShader.use();
-		/*offset+=0.00003f;
-		ourShader.setFloat("offset", offset);*/
 
-		//ourShader.setFloat("offset", offset);
-		//bind our VAO and draw triangle from 0-indexed vertices
-		//glUseProgram(shaderProgram);
+		//activate the shader program and draw texture rectangel
+		ourShader.use();
+		glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// swap back and front buffers for avoiding artifacts
 		// and check the events from user (mouse, keyboard)
 		glfwSwapBuffers(window);
