@@ -4,8 +4,10 @@
 out vec4 FragColor;
 in vec4 vertexColors;
 in vec2 TexCoord;
-uniform sampler2D texObject;
+uniform sampler2D texObject1;
+uniform sampler2D texObject2;
+
 void main()
 {
-	FragColor = texture(texObject,TexCoord) * vertexColors;
+	FragColor = mix(texture(texObject1,TexCoord),texture(texObject2,TexCoord),0.29);
 }

@@ -53,5 +53,11 @@
     <Image Include="textures\woodGate.jpg">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="textures\Glint.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="textures\Cake.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -94,18 +94,23 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	// load and create texture
-	unsigned int texture;
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	// load and create texture1 and texture 2
+	unsigned int texture1,texture2;
+	glGenTextures(1, &texture1);
+	glBindTexture(GL_TEXTURE_2D, texture1);
 	// set the texture wrapping parameters
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// set the texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	// load image, create texture, generate mipmaps
+	// tell stb_image.h to flip loaded texture's on the y-axis
+	stbi_set_flip_vertically_on_load(true);
+
+	// load image, create textures, generate mipmaps
+
+	// first texture (WOOD)
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load("textures/woodGate.jpg", &width, &height, &nrChannels,0);
 
@@ -116,15 +121,39 @@ int main()
 	}
 	else
 	{
-		std::cout << "Failed to load texture" << std::endl;
+		std::cout << "Failed to load WOOD texture" << std::endl;
 	}
 	// free image memory
 	stbi_image_free(data);
 
+	glGenTextures(1, &texture2);
+	glBindTexture(GL_TEXTURE_2D, texture2);
+	// set the texture wrapping parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	// set the texture filtering parameters
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	// second texture (CAKE)
+	data = stbi_load("textures/Cake.jpg", &width, &height, &nrChannels, 0);
 
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		std::cout << "Failed to load CAKE texture" << std::endl;
+	}
+
+	stbi_image_free(data);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
 
+	// set up our two uniforms (inputs) for textures for fragment shader using texture units zero and one
+	ourShader.use();
+	ourShader.setInt("texObject1", 0);
+	ourShader.setInt("texObject2", 1);
 
 	//render loop
 	while (!glfwWindowShouldClose(window))
@@ -139,9 +168,15 @@ int main()
 		//glClearColor(0.3568f, 0.0f, 0.7294f, 1.0f); // violet
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//activate the shader program and draw texture rectangel
+		//activate texture units for two textures and bind each texture for each texture unit
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2);
+
+		//activate the shader program and draw texture rectangle
 		ourShader.use();
-		glBindTexture(GL_TEXTURE_2D, texture);
+		//glBindTexture(GL_TEXTURE_2D, texture);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		// swap back and front buffers for avoiding artifacts
