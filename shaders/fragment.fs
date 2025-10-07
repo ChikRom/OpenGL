@@ -6,8 +6,8 @@ in vec4 vertexColors;
 in vec2 TexCoord;
 uniform sampler2D texObject1;
 uniform sampler2D texObject2;
-
+uniform float maxValue;
 void main()
 {
-	FragColor = mix(texture(texObject1,TexCoord),texture(texObject2,TexCoord),0.29);
+	FragColor = mix(texture(texObject1,TexCoord),texture(texObject2,TexCoord),maxValue);
 }

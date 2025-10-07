@@ -1,5 +1,8 @@
 #include <GLAD/glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include "Shader.h"
 #define STB_IMAGE_IMPLEMENTATION
@@ -10,6 +13,10 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
 // function which check if user pressed the escape key to close the window
 void processInput(GLFWwindow* window);
+
+
+
+float seeing = 0.2f;
 
 int main()
 {
@@ -99,11 +106,11 @@ int main()
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	// set the texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	// tell stb_image.h to flip loaded texture's on the y-axis
 	stbi_set_flip_vertically_on_load(true);
@@ -132,8 +139,10 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// set the texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+
 	// second texture (CAKE)
 	data = stbi_load("textures/Cake.jpg", &width, &height, &nrChannels, 0);
 
@@ -155,6 +164,8 @@ int main()
 	ourShader.setInt("texObject1", 0);
 	ourShader.setInt("texObject2", 1);
 
+
+
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -168,17 +179,38 @@ int main()
 		//glClearColor(0.3568f, 0.0f, 0.7294f, 1.0f); // violet
 		glClear(GL_COLOR_BUFFER_BIT);
 
+
 		//activate texture units for two textures and bind each texture for each texture unit
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-
+		ourShader.setFloat("maxValue", seeing);
 		//activate the shader program and draw texture rectangle
 		ourShader.use();
-		//glBindTexture(GL_TEXTURE_2D, texture);
+
+		// create our transform matrix, translate the container to top right and rotate it in real time
+		glm::mat4 trans = glm::mat4(1.0f);
+		trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
+		trans = glm::rotate(trans, float(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
+
+
+		// set our tranformation matrix uniform
+		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
+		// draw the second container in the left top corner and scaling it in real time
+		trans = glm::mat4(1.0f); // reset it to identity matrix
+		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+		float scaleAmount = abs(static_cast<float>(sin(glfwGetTime())));
+		trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
 		// swap back and front buffers for avoiding artifacts
 		// and check the events from user (mouse, keyboard)
 		glfwSwapBuffers(window);
@@ -209,4 +241,20 @@ void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true); // set the value of the close flag of the specified window
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		seeing += 0.0001f;
+		if (seeing >= 1.0f)
+		{
+			seeing = 1.0f;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		seeing -= 0.0001f;
+		if (seeing <= 0.0f)
+		{
+			seeing = 0.0f;
+		}
+	}
 }
