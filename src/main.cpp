@@ -165,7 +165,24 @@ int main()
 	ourShader.setInt("texObject2", 1);
 
 
+	// create our transform matrix, translate the container to top right and rotate it in real time
+	glm::mat4 model = glm::mat4(1.0f);
+	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	glm::mat4 view = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
+	glm::mat4 projection = glm::mat4(1.0f);
+	projection = glm::perspective(glm::radians(45.0f), 1600.0f / 800.0f, 0.1f, 100.0f);
 
+
+	// set our tranformation matrix uniform
+	unsigned int modelUniformLoc = glGetUniformLocation(ourShader.ID, "model");
+	glUniformMatrix4fv(modelUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+	unsigned int viewUniformLoc = glGetUniformLocation(ourShader.ID, "view");
+	glUniformMatrix4fv(viewUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+	unsigned int projectionUniformLoc = glGetUniformLocation(ourShader.ID, "projection");
+	glUniformMatrix4fv(projectionUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -189,26 +206,12 @@ int main()
 		//activate the shader program and draw texture rectangle
 		ourShader.use();
 
-		// create our transform matrix, translate the container to top right and rotate it in real time
-		glm::mat4 trans = glm::mat4(1.0f);
-		trans = glm::translate(trans, glm::vec3(0.5f, 0.5f, 0.0f));
-		trans = glm::rotate(trans, float(glfwGetTime()), glm::vec3(0.0f, 0.0f, 1.0f));
-
-
-		// set our tranformation matrix uniform
-		unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+		
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
-		// draw the second container in the left top corner and scaling it in real time
-		trans = glm::mat4(1.0f); // reset it to identity matrix
-		trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
-		float scaleAmount = abs(static_cast<float>(sin(glfwGetTime())));
-		trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
-		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 
 
 		// swap back and front buffers for avoiding artifacts

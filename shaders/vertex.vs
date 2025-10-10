@@ -5,10 +5,12 @@ layout (location = 1) in vec3 aColors;
 layout (location = 2) in vec2 aTexCoord;
 out vec4 vertexColors;
 out vec2 TexCoord;
-uniform mat4 transform;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 void main()
 {
-	gl_Position = transform * vec4(aPos,1.0);
+	gl_Position = projection * view * model * vec4(aPos,1.0);
 	vertexColors = vec4(aColors,1.0f);
 	TexCoord = aTexCoord;
 }
