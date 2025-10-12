@@ -5,18 +5,32 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include "Shader.h"
+#include "Camera.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 // callback function which executes every time when the window size is change
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
+// callbacck function which executes every time when we move our mouse
+void mouseCallback(GLFWwindow* windwo, double xPos, double yPos);
+
+// callback function which executes every time when we scroll our mouse wheel
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
+
 // function which check if user pressed the escape key to close the window
 void processInput(GLFWwindow* window);
 
 
 
-float seeing = 0.2f;
+// Global varibles
+Camera camera(glm::vec3(0.0f, 0.0f, 2.5f)); // camera object
+bool firstMouse = true; // for capture mouse in different places on the screen
+float lastX = 2400.0f / 2.0f; // x-centre of the screen for capturing mouse
+float lastY = 1200.0f / 2.0f; // y-centre of the screen for capturing mouse
+float deltaTime = 0.0f; // time difference between render current and last frames
+float lastFrame = 0.0f; // time for render last frame
+float seeing = 0.2f; // visability of the second texture
 
 int main()
 {
@@ -29,7 +43,7 @@ int main()
 
 
 	// create the window
-	GLFWwindow* window = glfwCreateWindow(1600, 1000, "OpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(2400,1200 , "OpenGL", NULL, NULL);
 
 	if (window == NULL)
 	{
@@ -39,6 +53,16 @@ int main()
 	}
 	// make the context of our window current on the calling thread
 	glfwMakeContextCurrent(window);
+	// tell GLFW to call the function framebuffer_size_callback on every window
+	// resize by registering it:
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+	// tell GLFW to call these two functions every time when we move/rotate camera or use zoom
+	glfwSetCursorPosCallback(window, mouseCallback);
+	glfwSetScrollCallback(window, scrollCallback);
+
+	// tell GFLW to capture out mouse
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
 
 	// initialize GLAD to determine the functions and manage function pointers
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -46,19 +70,61 @@ int main()
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
-	// tell GLFW to call the function framebuffer_size_callback on every window
-	// resize by registering it:
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
 
 	// Create our vertex and fragment shader, compile them and link into one shader programm
 	Shader ourShader("shaders/vertex.vs", "shaders/fragment.fs");
 
-	float vertices[]
-	{	// vertices				// colors			// textures
-		-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
-		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
-		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
-		-0.5f,	0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	0.0f, 1.0f
+	//float vertices[]
+	//{	// vertices				// colors			// textures
+	//	-0.5f, -0.5f, 0.0f,		0.0f, 0.0f, 1.0f,	0.0f, 0.0f,
+	//	 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f, 0.0f,
+	//	 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f, 1.0f,
+	//	-0.5f,	0.5f, 0.0f,		1.0f, 1.0f, 0.0f,	0.0f, 1.0f
+	//};
+	// vertices for cube
+	float vertices[] = {
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 
 	// indices data
@@ -90,11 +156,11 @@ int main()
 
 
 	// set our vertex, colour and texture attributes for vertex shader and active vertex attribute with index 0,1,2
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	/*glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);*/
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	//unbind VAO, VBO
@@ -106,11 +172,11 @@ int main()
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
 	// set the texture wrapping parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// set the texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	// tell stb_image.h to flip loaded texture's on the y-axis
 	stbi_set_flip_vertically_on_load(true);
@@ -139,8 +205,8 @@ int main()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	// set the texture filtering parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 
 	// second texture (CAKE)
@@ -164,29 +230,17 @@ int main()
 	ourShader.setInt("texObject1", 0);
 	ourShader.setInt("texObject2", 1);
 
+	glEnable(GL_DEPTH_TEST); // activate z-buffer for avoiding rerender
 
-	// create our transform matrix, translate the container to top right and rotate it in real time
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-	glm::mat4 view = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
-	glm::mat4 projection = glm::mat4(1.0f);
-	projection = glm::perspective(glm::radians(45.0f), 1600.0f / 800.0f, 0.1f, 100.0f);
-
-
-	// set our tranformation matrix uniform
-	unsigned int modelUniformLoc = glGetUniformLocation(ourShader.ID, "model");
-	glUniformMatrix4fv(modelUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
-
-	unsigned int viewUniformLoc = glGetUniformLocation(ourShader.ID, "view");
-	glUniformMatrix4fv(viewUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
-
-	unsigned int projectionUniformLoc = glGetUniformLocation(ourShader.ID, "projection");
-	glUniformMatrix4fv(projectionUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
-		//check if user pressed escape
+		// calculate the deltatime between current and last frame
+		float currentTime = glfwGetTime();
+		deltaTime = currentTime - lastFrame;
+		lastFrame = currentTime;
+
+		//check if user pressed escape or move the camera
 		processInput(window);
 
 
@@ -194,7 +248,27 @@ int main()
 		// and clear buffers to preset values
 		glClearColor(0.0f, 0.2f, 0.0f, 1.0f); // yellow
 		//glClearColor(0.3568f, 0.0f, 0.7294f, 1.0f); // violet
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// create our matrices to transform the cubee
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::rotate(model, float(0), glm::vec3(0.5f, 1.0f, 0.0f));
+
+		glm::mat4 view = camera.getViewMatrix();
+
+		glm::mat4 projection = glm::mat4(1.0f);
+		projection = glm::perspective(glm::radians(camera.zoom), 2400.0f / 1200.0f, 0.1f, 100.0f);
+
+
+		// set our transformation matrix uniform
+		unsigned int modelUniformLoc = glGetUniformLocation(ourShader.ID, "model");
+		glUniformMatrix4fv(modelUniformLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+		unsigned int viewUniformLoc = glGetUniformLocation(ourShader.ID, "view");
+		glUniformMatrix4fv(viewUniformLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+		unsigned int projectionUniformLoc = glGetUniformLocation(ourShader.ID, "projection");
+		glUniformMatrix4fv(projectionUniformLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
 
 		//activate texture units for two textures and bind each texture for each texture unit
@@ -203,17 +277,10 @@ int main()
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 		ourShader.setFloat("maxValue", seeing);
-		//activate the shader program and draw texture rectangle
+		//activate the shader program and draw texture cube
 		ourShader.use();
-
-		
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-
-
-
+		glDrawArrays(GL_TRIANGLES,0,36);
 		// swap back and front buffers for avoiding artifacts
 		// and check the events from user (mouse, keyboard)
 		glfwSwapBuffers(window);
@@ -223,15 +290,11 @@ int main()
 	glDeleteVertexArrays(1,&VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	//glDeleteProgram(shaderProgram);
 	glfwTerminate();
 
 
 	return 0;
 }
-
-
-
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -260,4 +323,45 @@ void processInput(GLFWwindow* window)
 			seeing = 0.0f;
 		}
 	}
+	// for moving the camera
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+	{
+		camera.processKeyboard(FORWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+	{
+		camera.processKeyboard(BACKWARD, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+	{
+		camera.processKeyboard(RIGHT, deltaTime);
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+	{
+		camera.processKeyboard(LEFT, deltaTime);
+	}
+}
+
+// for rotating the camera
+void mouseCallback(GLFWwindow* window, double xPos, double yPos)
+{
+	if (firstMouse == true)
+	{
+		lastX = xPos;
+		lastY = yPos;
+		firstMouse = false;
+	}
+
+	float xoffset = xPos - lastX;
+	float yoffset = lastY - yPos;
+	lastX = xPos;
+	lastY = yPos;
+	
+	camera.processMouseMovement(xoffset, yoffset);
+}
+
+// for Camera zoom
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	camera.processMouseScroll(yoffset);
 }
