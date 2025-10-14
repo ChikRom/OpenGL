@@ -52,8 +52,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\vertex.vs" />
-    <None Include="shaders\fragment.fs" />
+    <None Include="shaders\vertexObject.glsl" />
+    <None Include="shaders\fragmentObject.glsl" />
+    <None Include="shaders\vertexLight.glsl" />
+    <None Include="shaders\fragmentLight.glsl">
+      <Filter>Исходные файлы</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\woodGate.jpg">

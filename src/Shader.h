@@ -3,7 +3,7 @@
 
 
 #include "GLAD/glad/glad.h"
-
+#include "glm/glm.hpp"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -19,13 +19,14 @@ public:
 public:
 	// reads and builds the shader
 	Shader(const char* vertexPath, const char* fragmentPath);
-	void use(); // activate the shader
+	void use() const; // activate the shader
 
 	//utility for uniform functions
-	void setBool(const std::string& name, bool value);
-	void setInt(const std::string& name, int value);
-	void setFloat(const std::string& name, float value);
-
+	void setBool(const std::string& name, bool value) const;
+	void setInt(const std::string& name, int value) const;
+	void setFloat(const std::string& name, float value) const;
+	void setMat4(const std::string& name, const glm::mat4& matrix) const;
+	void setVec3(const std::string& name, const glm::vec3& vector) const;
 private:
 	void checkCompileErrors(unsigned int shader, std::string type);
 

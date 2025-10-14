@@ -168,6 +168,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="shaders\fragmentLight.glsl">
+      <FileType>Document</FileType>
+    </None>
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\main.cpp" />
@@ -183,8 +186,9 @@
     <ClInclude Include="src\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.fs" />
-    <None Include="shaders\vertex.vs" />
+    <None Include="shaders\fragmentObject.glsl" />
+    <None Include="shaders\vertexLight.glsl" />
+    <None Include="shaders\vertexObject.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\Cake.jpg" />

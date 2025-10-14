@@ -61,33 +61,44 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
 
 	// delete shaders
 	glDeleteShader(vertex);
-	glDeleteProgram(fragment);
+	glDeleteShader(fragment);
 }
 
-void Shader::use()
+void Shader::use() const
 {
 	glUseProgram(ID);
 }
 
 
 // set bool uniform (input) for our shaders
-void Shader::setBool(const std::string& name, bool value)
+void Shader::setBool(const std::string& name, bool value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
 }
 
 
 // set int uniform (input) for our shaders
-void Shader::setInt(const std::string& name, int value)
+void Shader::setInt(const std::string& name, int value) const 
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
 }
 
 
 // set float uniform (input) for our shaders
-void Shader::setFloat(const std::string& name, float value)
+void Shader::setFloat(const std::string& name, float value) const
 {
 	glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+// set matrix4 uniform (input) for our shaders
+void Shader::setMat4(const std::string& name, const glm::mat4& matrix) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
+}
+// set vec 3 unifomr (input) for our shaders
+void Shader::setVec3(const std::string& name, const glm::vec3& vector) const
+{
+	glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &vector[0]);
 }
 
 // check errors for compiling and linking shaders
