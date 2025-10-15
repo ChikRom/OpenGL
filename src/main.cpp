@@ -78,52 +78,53 @@ int main()
 	Shader LightShader("shaders/vertexLight.glsl", "shaders/fragmentLight.glsl");
 
 
+
 	// vertices for cube
 	float vertices[] = {
-	-0.5f, -0.5f, -0.5f,  
-	 0.5f, -0.5f, -0.5f,  
-	 0.5f,  0.5f, -0.5f, 
-	 0.5f,  0.5f, -0.5f,  
-	-0.5f,  0.5f, -0.5f,  
-	-0.5f, -0.5f, -0.5f,  
+	-0.5f, -0.5f, -0.5f,  0.0f,0.0f,-1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,0.0f,-1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,0.0f,-1.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,0.0f,-1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,0.0f,-1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,0.0f,-1.0f,
 
-	-0.5f, -0.5f,  0.5f,  
-	 0.5f, -0.5f,  0.5f,  
-	 0.5f,  0.5f,  0.5f,  
-	 0.5f,  0.5f,  0.5f,  
-	-0.5f,  0.5f,  0.5f,  
-	-0.5f, -0.5f,  0.5f,  
+	-0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f,
 
-	-0.5f,  0.5f,  0.5f,  
-	-0.5f,  0.5f, -0.5f,  
-	-0.5f, -0.5f, -0.5f, 
-	-0.5f, -0.5f, -0.5f, 
-	-0.5f, -0.5f,  0.5f,  
-	-0.5f,  0.5f,  0.5f,  
+	-0.5f,  0.5f,  0.5f,  -1.0f,0.0f,0.0f,
+	-0.5f,  0.5f, -0.5f,  -1.0f,0.0f,0.0f,
+	-0.5f, -0.5f, -0.5f,  -1.0f,0.0f,0.0f,
+	-0.5f, -0.5f, -0.5f,  -1.0f,0.0f,0.0f,
+	-0.5f, -0.5f,  0.5f,  -1.0f,0.0f,0.0f,
+	-0.5f,  0.5f,  0.5f,  -1.0f,0.0f,0.0f,
 
-	 0.5f,  0.5f,  0.5f,  
-	 0.5f,  0.5f, -0.5f,  
-	 0.5f, -0.5f, -0.5f,  
-	 0.5f, -0.5f, -0.5f, 
-	 0.5f, -0.5f,  0.5f,  
-	 0.5f,  0.5f,  0.5f,  
+	 0.5f,  0.5f,  0.5f,  1.0f,0.0f,0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f,0.0f,0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f,0.0f,0.0f,
 
-	-0.5f, -0.5f, -0.5f,  
-	 0.5f, -0.5f, -0.5f, 
-	 0.5f, -0.5f,  0.5f,  
-	 0.5f, -0.5f,  0.5f,  
-	-0.5f, -0.5f,  0.5f,  
-	-0.5f, -0.5f, -0.5f,  
+	-0.5f, -0.5f, -0.5f,  0.0f,-1.0f,0.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f,-1.0f,0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,-1.0f,0.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f,-1.0f,0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f,-1.0f,0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f,-1.0f,0.0f,
 
-	-0.5f,  0.5f, -0.5f,  
-	 0.5f,  0.5f, -0.5f,  
-	 0.5f,  0.5f,  0.5f,  
-	 0.5f,  0.5f,  0.5f,  
-	-0.5f,  0.5f,  0.5f,  
-	-0.5f,  0.5f, -0.5f,  
+	-0.5f,  0.5f, -0.5f,  0.0f,1.0f,0.0f,
+	 0.5f,  0.5f, -0.5f,  0.0f,1.0f,0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f,
+	 0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f,1.0f,0.0f,
 	};
 
-
+	
 
 
 	//Generate Vertex Array Object, Vertex Buffer Object and Element Buffer Object
@@ -144,9 +145,10 @@ int main()
 
 
 	// set our vertex, colour attributes for vertex shader and active vertex attribute with index 0,1,2
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	//unbind VAO, VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -158,7 +160,7 @@ int main()
 	glBindVertexArray(LightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 
@@ -170,10 +172,19 @@ int main()
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
+
+
 		// calculate the deltatime between current and last frame
 		float currentTime = glfwGetTime();
 		deltaTime = currentTime - lastFrame;
 		lastFrame = currentTime;
+
+		const float radius = 3.0f;
+		float lightX = sin(glfwGetTime()*0.3) * radius;
+		float lightZ = cos(glfwGetTime()*0.3) * radius;
+
+		LightPos.x = lightX;
+		LightPos.z = lightZ;
 
 		//check if user pressed escape or move the camera
 		processInput(window);
@@ -181,9 +192,11 @@ int main()
 		ObjectShader.use();
 		ObjectShader.setVec3("ObjectColour", objectColour);
 		ObjectShader.setVec3("LightColour", lightColour);
+		ObjectShader.setVec3("lightPos", LightPos);
+
 		// set clear values for the colour buffers
 		// and clear buffers to preset values
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // yellow
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // yellow
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
