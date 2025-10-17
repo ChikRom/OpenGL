@@ -169,6 +169,28 @@ int main()
 	// colour for object and light
 	glm::vec3 objectColour(0.3137f,0.0f, 0.8078f); // violet
 	glm::vec3 lightColour(1.0f,1.0f,1.0f);
+	glm::vec3 materialSpecular = glm::vec3(0.6f, 0.6f, 0.6f);
+	float materialShininess = 64.0f;
+	glm::vec3 lightAmbient = glm::vec3(0.2f, 0.2f, 0.2f);
+	glm::vec3 lightDiffuse = glm::vec3(0.6f, 0.6f, 0.6f);
+	glm::vec3 lightSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	ObjectShader.use();
+	ObjectShader.setVec3("material.ambient", objectColour);
+	ObjectShader.setVec3("material.diffuse", objectColour);
+	ObjectShader.setVec3("material.specular", materialSpecular);
+	ObjectShader.setFloat("material.shininess", materialShininess);
+
+	
+
+	ObjectShader.setVec3("light.ambient", lightAmbient);
+	ObjectShader.setVec3("light.diffuse", lightDiffuse);
+	ObjectShader.setVec3("light.specular", lightSpecular);
+
+
+	//ObjectShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+	//ObjectShader.setVec3("light.diffuse", glm::vec3(0.6f, 0.6f, 0.6f));
+	//ObjectShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -179,20 +201,28 @@ int main()
 		deltaTime = currentTime - lastFrame;
 		lastFrame = currentTime;
 
-		const float radius = 3.0f;
-		float lightX = sin(glfwGetTime()*0.3) * radius;
-		float lightZ = cos(glfwGetTime()*0.3) * radius;
+		//const float radius = 3.0f;
+		//float lightX = sin(glfwGetTime()*0.3) * radius;
+		//float lightZ = cos(glfwGetTime()*0.3) * radius;
 
-		LightPos.x = lightX;
-		LightPos.z = lightZ;
+		//LightPos.x = lightX;
+		//LightPos.z = lightZ;
 
 		//check if user pressed escape or move the camera
 		processInput(window);
 
 		ObjectShader.use();
-		ObjectShader.setVec3("ObjectColour", objectColour);
-		ObjectShader.setVec3("LightColour", lightColour);
-		ObjectShader.setVec3("lightPos", LightPos);
+
+
+
+		glm::vec3 lightColour;
+		lightColour.x = sin(glfwGetTime() * 2.0f);
+		lightColour.y = sin(glfwGetTime() * 0.7f);
+		lightColour.z = sin(glfwGetTime() * 1.3f);
+
+
+		ObjectShader.setVec3("light.ambient", lightColour * lightAmbient);
+		ObjectShader.setVec3("light.diffuse", lightColour * lightDiffuse);
 
 		// set clear values for the colour buffers
 		// and clear buffers to preset values
@@ -202,6 +232,8 @@ int main()
 
 		// set the transformation matrices
 		glm::mat4 view = camera.getViewMatrix();
+		ObjectShader.setVec3("light.position", glm::vec3(view* glm::vec4(LightPos, 1.0f)));
+
 		glm::mat4 projection = glm::mat4(1.0f);
 		projection = glm::perspective(glm::radians(camera.zoom), 2400.0f / 1200.0f, 0.1f, 100.0f);
 		glm::mat4 model = glm::mat4(1.0f);
@@ -209,6 +241,7 @@ int main()
 		ObjectShader.setMat4("projection", projection);
 		ObjectShader.setMat4("view", view);
 		ObjectShader.setMat4("model", model);
+
 		// draw objectCube
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
