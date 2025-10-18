@@ -21,7 +21,7 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
 // function which check if user pressed the escape key to close the window
 void processInput(GLFWwindow* window);
 
-
+unsigned int loadTexture(char const* path);
 
 // Global varibles
 Camera camera(glm::vec3(0.0f, 0.0f, 5.0f)); // camera object
@@ -81,47 +81,48 @@ int main()
 
 	// vertices for cube
 	float vertices[] = {
-	-0.5f, -0.5f, -0.5f,  0.0f,0.0f,-1.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,0.0f,-1.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,0.0f,-1.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,0.0f,-1.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,0.0f,-1.0f,
+		// positions          // normals           // texture coords
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
 
-	-0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,0.0f,1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,0.0f,1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
 
-	-0.5f,  0.5f,  0.5f,  -1.0f,0.0f,0.0f,
-	-0.5f,  0.5f, -0.5f,  -1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,  -1.0f,0.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,  -1.0f,0.0f,0.0f,
-	-0.5f, -0.5f,  0.5f,  -1.0f,0.0f,0.0f,
-	-0.5f,  0.5f,  0.5f,  -1.0f,0.0f,0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-	 0.5f,  0.5f,  0.5f,  1.0f,0.0f,0.0f,
-	 0.5f,  0.5f, -0.5f,  1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,  1.0f,0.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,  1.0f,0.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,  1.0f,0.0f,0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
 
-	-0.5f, -0.5f, -0.5f,  0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f, -0.5f,  0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,-1.0f,0.0f,
-	 0.5f, -0.5f,  0.5f,  0.0f,-1.0f,0.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,-1.0f,0.0f,
-	-0.5f, -0.5f, -0.5f,  0.0f,-1.0f,0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
 
-	-0.5f,  0.5f, -0.5f,  0.0f,1.0f,0.0f,
-	 0.5f,  0.5f, -0.5f,  0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f,
-	 0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f,
-	-0.5f,  0.5f,  0.5f,  0.0f,1.0f,0.0f,
-	-0.5f,  0.5f, -0.5f,  0.0f,1.0f,0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 	};
 
 	
@@ -145,10 +146,13 @@ int main()
 
 
 	// set our vertex, colour attributes for vertex shader and active vertex attribute with index 0,1,2
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3*sizeof(float)));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
 
 	//unbind VAO, VBO
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -160,25 +164,23 @@ int main()
 	glBindVertexArray(LightVAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
 
 	glEnable(GL_DEPTH_TEST); // activate z-buffer for avoiding rerender
 
 	// colour for object and light
-	glm::vec3 objectColour(0.3137f,0.0f, 0.8078f); // violet
-	glm::vec3 lightColour(1.0f,1.0f,1.0f);
-	glm::vec3 materialSpecular = glm::vec3(0.6f, 0.6f, 0.6f);
+
+	//glm::vec3 materialSpecular = glm::vec3(0.5f, 0.5f, 0.5f);
 	float materialShininess = 64.0f;
 	glm::vec3 lightAmbient = glm::vec3(0.2f, 0.2f, 0.2f);
 	glm::vec3 lightDiffuse = glm::vec3(0.6f, 0.6f, 0.6f);
 	glm::vec3 lightSpecular = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	ObjectShader.use();
-	ObjectShader.setVec3("material.ambient", objectColour);
-	ObjectShader.setVec3("material.diffuse", objectColour);
-	ObjectShader.setVec3("material.specular", materialSpecular);
+
+	//ObjectShader.setVec3("material.specular", materialSpecular);
 	ObjectShader.setFloat("material.shininess", materialShininess);
 
 	
@@ -188,9 +190,12 @@ int main()
 	ObjectShader.setVec3("light.specular", lightSpecular);
 
 
-	//ObjectShader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-	//ObjectShader.setVec3("light.diffuse", glm::vec3(0.6f, 0.6f, 0.6f));
-	//ObjectShader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+	unsigned int diffuseMap = loadTexture("textures/container3D.png");
+	unsigned int specularMap = loadTexture("textures/container3DSpecular.png");
+	ObjectShader.setInt("material.diffuse", 0);
+	ObjectShader.setInt("material.specular", 1);
+	
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -215,15 +220,6 @@ int main()
 
 
 
-		glm::vec3 lightColour;
-		lightColour.x = sin(glfwGetTime() * 2.0f);
-		lightColour.y = sin(glfwGetTime() * 0.7f);
-		lightColour.z = sin(glfwGetTime() * 1.3f);
-
-
-		ObjectShader.setVec3("light.ambient", lightColour * lightAmbient);
-		ObjectShader.setVec3("light.diffuse", lightColour * lightDiffuse);
-
 		// set clear values for the colour buffers
 		// and clear buffers to preset values
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // yellow
@@ -241,6 +237,16 @@ int main()
 		ObjectShader.setMat4("projection", projection);
 		ObjectShader.setMat4("view", view);
 		ObjectShader.setMat4("model", model);
+
+
+
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, diffuseMap);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, specularMap);
+
 
 		// draw objectCube
 		glBindVertexArray(CubeVAO);
@@ -330,4 +336,43 @@ void mouseCallback(GLFWwindow* window, double xPos, double yPos)
 void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.processMouseScroll(yoffset);
+}
+
+
+
+unsigned int loadTexture(char const* path)
+{
+	unsigned int textureID;
+	glGenTextures(1, &textureID);
+
+	int width, height, nrComponents;
+	unsigned char* data = stbi_load(path, &width, &height, &nrComponents, 0);
+	if (data)
+	{
+		GLenum format;
+		if (nrComponents == 1)
+			format = GL_RED;
+		else if (nrComponents == 3)
+			format = GL_RGB;
+		else if (nrComponents == 4)
+			format = GL_RGBA;
+
+		glBindTexture(GL_TEXTURE_2D, textureID);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		stbi_image_free(data);
+	}
+	else
+	{
+		std::cout << "Texture failed to load at path: " << path << std::endl;
+		stbi_image_free(data);
+	}
+
+	return textureID;
 }

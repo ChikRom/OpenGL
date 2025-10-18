@@ -69,5 +69,11 @@
     <Image Include="textures\Cake.jpg">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="textures\container3D.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="textures\container3DSpecular.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
 </Project>
