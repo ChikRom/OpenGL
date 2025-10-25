@@ -27,6 +27,12 @@
     <ClCompile Include="src\Camera.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GLAD\glad\glad.h">
@@ -50,6 +56,12 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\Mesh.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\vertexObject.glsl" />
@@ -58,6 +70,9 @@
     <None Include="shaders\fragmentLight.glsl">
       <Filter>Исходные файлы</Filter>
     </None>
+    <None Include="shaders\fragmentModel.glsl" />
+    <None Include="shaders\vertexModel.glsl" />
+    <None Include="models\backpack\backpack.mtl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\woodGate.jpg">
@@ -75,5 +90,23 @@
     <Image Include="textures\container3DSpecular.png">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="models\backpack\specular.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="models\backpack\ao.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="models\backpack\diffuse.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="models\backpack\normal.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="models\backpack\roughness.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="models\backpack\source_attribution.txt" />
   </ItemGroup>
 </Project>
