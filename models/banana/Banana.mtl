@@ -1,0 +1,21 @@
+# Blender MTL File: 'Banana.blend'
+# Material Count: 1
+
+newmtl Banana
+Ns 324.0
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+
+# текстуры (пути относительные к этому .mtl)
+map_Kd Banana.jpg
+map_Bump Banana_Bump.jpg
+# если есть спекулярная карта:
+# map_Ks Banana_specular.jpg
+
+# необязательно: PBR-расширения (ваш код их не читает)
+# map_Pr Banana_Roughness.jpg
