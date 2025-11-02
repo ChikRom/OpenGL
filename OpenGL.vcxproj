@@ -173,6 +173,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="models\backpack\backpack.mtl" />
+    <None Include="shaders\fragmentDepth.glsl" />
     <None Include="shaders\fragmentLight.glsl">
       <FileType>Document</FileType>
     </None>
@@ -182,6 +183,7 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <None Include="shaders\fragmentSingle.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GLAD\glad\glad.h" />
@@ -197,6 +199,7 @@
   <ItemGroup>
     <None Include="shaders\fragmentModel.glsl" />
     <None Include="shaders\fragmentObject.glsl" />
+    <None Include="shaders\vertexDepth.glsl" />
     <None Include="shaders\vertexLight.glsl" />
     <None Include="shaders\vertexModel.glsl" />
     <None Include="shaders\vertexObject.glsl" />
@@ -211,6 +214,8 @@
     <Image Include="textures\container3D.png" />
     <Image Include="textures\container3DSpecular.png" />
     <Image Include="textures\Glint.jpg" />
+    <Image Include="textures\marble.jpg" />
+    <Image Include="textures\metal.jpg" />
     <Image Include="textures\woodGate.jpg" />
   </ItemGroup>
   <ItemGroup>

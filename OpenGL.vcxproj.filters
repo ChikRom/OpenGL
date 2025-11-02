@@ -73,6 +73,9 @@
     <None Include="shaders\fragmentModel.glsl" />
     <None Include="shaders\vertexModel.glsl" />
     <None Include="models\backpack\backpack.mtl" />
+    <None Include="shaders\vertexDepth.glsl" />
+    <None Include="shaders\fragmentDepth.glsl" />
+    <None Include="shaders\fragmentSingle.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\woodGate.jpg">
@@ -103,6 +106,12 @@
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="models\backpack\roughness.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="textures\marble.jpg">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="textures\metal.jpg">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>
