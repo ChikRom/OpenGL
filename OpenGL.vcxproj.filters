@@ -76,6 +76,8 @@
     <None Include="shaders\vertexDepth.glsl" />
     <None Include="shaders\fragmentDepth.glsl" />
     <None Include="shaders\fragmentSingle.glsl" />
+    <None Include="shaders\vertexScreen.glsl" />
+    <None Include="shaders\fragmentScreen.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\woodGate.jpg">

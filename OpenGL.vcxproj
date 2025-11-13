@@ -183,7 +183,9 @@
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <None Include="shaders\fragmentScreen.glsl" />
     <None Include="shaders\fragmentSingle.glsl" />
+    <None Include="shaders\vertexScreen.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\GLAD\glad\glad.h" />
