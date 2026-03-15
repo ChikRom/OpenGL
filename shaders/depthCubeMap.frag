@@ -1,0 +1,13 @@
+#version 460 core
+
+
+in vec4 FragPos;
+
+uniform vec3 lightPos;
+uniform float far_plane;
+void main()
+{
+	float depth = length(FragPos.xyz - lightPos);
+	depth = depth / far_plane;
+	gl_FragDepth = depth;
+}
